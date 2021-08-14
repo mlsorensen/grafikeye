@@ -1,4 +1,4 @@
-module github.com/mlsorensen/qse
+module github.com/mlsorensen/grafikeye
 
 go 1.16
 

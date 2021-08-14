@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mlsorensen/qse/pkg/serial"
+	"github.com/mlsorensen/grafikeye/pkg/serial"
 	"time"
 )
 
