@@ -52,14 +52,18 @@ func (q *QSESession) StartMonitor(callback func(command QSCommand)) error {
 			num, err := q.openPort.Read(buf)
 			if err != nil {
 				// log error, throttle retries to 10s
-				time.Sleep(10)
+				time.Sleep(time.Second * 10)
 				continue
 			}
 
 			for i := 0; i < num; i++ {
 				if buf[i] == '\r' {
 					// log string and error
-					cmd, _ := parseQSEMessage(string(line))
+					cmd, err := parseQSEMessage(string(line))
+					if err != nil {
+						fmt.Printf("Error parsing line '%s': %v\n",string(line), err)
+						continue
+					}
 					callback(cmd)
 					line = []byte{}
 				} else {
@@ -72,9 +76,32 @@ func (q *QSESession) StartMonitor(callback func(command QSCommand)) error {
 	return nil
 }
 
+func (q *QSESession) Send(cmd QSCommand) error {
+	if q.openPort == nil {
+		err := q.NewSession()
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err := q.openPort.Write(cmd.Bytes())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *QSCommand) Bytes() []byte {
+	opType := string(c.Operation) + c.Type
+	cmdFields := strings.Join(c.CommandFields, ",")
+	str := fmt.Sprintf("%s,%s,%s\r\n", opType, c.IntegrationId, cmdFields)
+	return []byte(str)
+}
+
 func parseQSEMessage(line string) (cmd QSCommand, err error) {
 	line = strings.TrimSpace(line)
-	line = strings.TrimPrefix(line, "QSE>")
+	line = strings.TrimLeft(line, "QSE>")
 	parts := strings.Split(line, ",")
 
 	if len(parts) == 0 {

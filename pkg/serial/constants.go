@@ -1,7 +1,10 @@
 package serial
 
 const (
-	OperationExecute = '#'
-	OperationQuery = '?'
-	OperationMonitor = '~'
+	OperationExecute = byte('#')
+	OperationQuery = byte('?')
+	OperationMonitor = byte('~')
+
+	TypeDevice = "DEVICE"
+	GrafikEye = "GRAFIKEYE"
 )
