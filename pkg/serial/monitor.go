@@ -59,13 +59,14 @@ func (q *QSESession) StartMonitor(callback func(command QSCommand)) error {
 			for i := 0; i < num; i++ {
 				if buf[i] == '\r' {
 					// log string and error
-					cmd, err := parseQSEMessage(string(line))
+					msg := strings.TrimSpace(string(line))
+					line = []byte{}
+					cmd, err := parseQSEMessage(msg)
 					if err != nil {
-						fmt.Printf("Error parsing line '%s': %v\n",string(line), err)
+						fmt.Printf("Error parsing line '%s': %v\n",msg, err)
 						continue
 					}
 					callback(cmd)
-					line = []byte{}
 				} else {
 					line = append(line, buf[i])
 				}
