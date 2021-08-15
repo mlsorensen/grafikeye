@@ -94,30 +94,14 @@ func (q *QSESession) Send(cmd QSCommand) error {
 }
 
 func (q *QSESession) PressButton(button string) error {
-	fields := []string{button, ActionPress}
-	cmd := QSCommand{OperationExecute, TypeDevice, GrafikEye, fields}
-	return q.Send(cmd)
-}
-
-func (q *QSESession) ButtonLEDOff(button string) error {
-	fields := []string{button, ActionLEDChange, LEDStateOff}
-	cmd := QSCommand{
-		Operation:     OperationExecute,
-		Type:          TypeDevice,
-		IntegrationId: GrafikEye,
-		CommandFields: fields,
+	pressFields := []string{button, ActionPress}
+	releaseFields := []string{button, ActionRelease}
+	cmd := QSCommand{OperationExecute, TypeDevice, GrafikEye, pressFields}
+	err := q.Send(cmd)
+	if err != nil {
+		return err
 	}
-	return q.Send(cmd)
-}
-
-func (q *QSESession) ButtonLEDOn(button string) error {
-	fields := []string{button, ActionLEDChange, LEDStateOn}
-	cmd := QSCommand{
-		Operation:     OperationExecute,
-		Type:          TypeDevice,
-		IntegrationId: GrafikEye,
-		CommandFields: fields,
-	}
+	cmd.CommandFields = releaseFields
 	return q.Send(cmd)
 }
 
