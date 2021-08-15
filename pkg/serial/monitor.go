@@ -99,6 +99,28 @@ func (q *QSESession) PressButton(button string) error {
 	return q.Send(cmd)
 }
 
+func (q *QSESession) ButtonLEDOff(button string) error {
+	fields := []string{button, ActionLEDChange, LEDStateOff}
+	cmd := QSCommand{
+		Operation:     OperationExecute,
+		Type:          TypeDevice,
+		IntegrationId: GrafikEye,
+		CommandFields: fields,
+	}
+	return q.Send(cmd)
+}
+
+func (q *QSESession) ButtonLEDOn(button string) error {
+	fields := []string{button, ActionLEDChange, LEDStateOn}
+	cmd := QSCommand{
+		Operation:     OperationExecute,
+		Type:          TypeDevice,
+		IntegrationId: GrafikEye,
+		CommandFields: fields,
+	}
+	return q.Send(cmd)
+}
+
 func (c *QSCommand) Bytes() []byte {
 	opType := string(c.Operation) + c.Type
 	cmdFields := strings.Join(c.CommandFields, ",")
