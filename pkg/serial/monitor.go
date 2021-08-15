@@ -35,6 +35,7 @@ func (q *QSESession) NewSession() error {
 // StartMonitor begins reading the serial connection. When a complete
 // QSE message is found, it calls the provided function.
 // TODO: add cancel channel to break out of monitor loop
+// TODO: handle closing session
 func (q *QSESession) StartMonitor(callback func(command QSCommand)) error {
 	if q.openPort == nil {
 		err := q.NewSession()

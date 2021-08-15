@@ -18,6 +18,10 @@ const (
 	ButtonShade2 = "39"
 	ButtonShade3 = "40"
 
-	ActionPress   = "3"
-	ActionRelease = "4"
+	ActionPress     = "3"
+	ActionRelease   = "4"
+	ActionLEDChange = "9"
+
+	LEDStateOff = "0"
+	LEDStateOn  = "1"
 )
