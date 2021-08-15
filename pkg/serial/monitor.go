@@ -10,13 +10,13 @@ import (
 
 type QSESession struct {
 	SerialPort string
-	BaudRate int
-	openPort *serial.Port
+	BaudRate   int
+	openPort   *serial.Port
 }
 
 type QSCommand struct {
-	Operation byte
-	Type string
+	Operation     byte
+	Type          string
 	IntegrationId string
 	CommandFields []string // using string because field content types are variable
 }
@@ -31,7 +31,6 @@ func (q *QSESession) NewSession() error {
 
 	return nil
 }
-
 
 // StartMonitor begins reading the serial connection. When a complete
 // QSE message is found, it calls the provided function.
@@ -63,7 +62,7 @@ func (q *QSESession) StartMonitor(callback func(command QSCommand)) error {
 					line = []byte{}
 					cmd, err := parseQSEMessage(msg)
 					if err != nil {
-						fmt.Printf("Error parsing line '%s': %v\n",msg, err)
+						fmt.Printf("Error parsing line '%s': %v\n", msg, err)
 						continue
 					}
 					callback(cmd)
@@ -93,6 +92,12 @@ func (q *QSESession) Send(cmd QSCommand) error {
 	return nil
 }
 
+func (q *QSESession) PressButton(button string) error {
+	fields := []string{button, ActionPress}
+	cmd := QSCommand{OperationExecute, TypeDevice, GrafikEye, fields}
+	return q.Send(cmd)
+}
+
 func (c *QSCommand) Bytes() []byte {
 	opType := string(c.Operation) + c.Type
 	cmdFields := strings.Join(c.CommandFields, ",")
@@ -111,7 +116,7 @@ func parseQSEMessage(line string) (cmd QSCommand, err error) {
 	}
 
 	operation := parts[0][0]
-	operationMatcher := fmt.Sprintf("^[%c%c%c]$",OperationMonitor, OperationExecute, OperationQuery)
+	operationMatcher := fmt.Sprintf("^[%c%c%c]$", OperationMonitor, OperationExecute, OperationQuery)
 	validOperation, err := regexp.Match(operationMatcher, []byte{operation})
 	if err != nil {
 		err = fmt.Errorf("unable to parse line '%s'", line)
